@@ -32,7 +32,6 @@ import (
 // Telegram contains URL
 type Telegram struct {
 	Token     		string
-	BotID			string
 	ChatID 			string
 	NotifType 		config.NotifType
 }
@@ -41,7 +40,6 @@ type Telegram struct {
 func NewTelegram(c config.Telegram) Notifier {
 	return &Telegram{
 		Token: c.Token,
-		BotID: c.BotID,
 		ChatID: c.Channel,
 		NotifType: c.NotifType,
 	}
@@ -50,7 +48,6 @@ func NewTelegram(c config.Telegram) Notifier {
 // SendMessage sends message to Telegram Channel
 func (t *Telegram) SendMessage(msg string) error {
 	log.Debug(fmt.Sprintf(">> Sending to Telegram: %+v", msg))
-
 	bot, err := tgbotapi.NewBotAPI(t.Token)
 	if err != nil {
 		log.Error("error creating Telegram session,", err)
@@ -112,46 +109,44 @@ func formatTelegramMessage(event events.Event, notifyType config.NotifType) stri
 }
 
 func telegramLongNotification(event events.Event) string {
-	text := fmt.Sprintf("*%s*", event.Title) + "\\"
-	text += "Kind: " + event.Kind + "\\"
-	text += "Name: " + event.Name + "\\"
+	text := fmt.Sprintf("*%s*", event.Title) + "\n"
+	text += "Kind: " + event.Kind + "\n"
+	text += "Name: " + event.Name + "\n"
 	if event.Namespace != "" {
-		text += "Namespace: " + event.Namespace + "\\"
+		text += "Namespace: " + event.Namespace + "\n"
 	}
 	if event.Reason != "" {
-		text += "Reason: " + event.Reason + "\\"
+		text += "Reason: " + event.Reason + "\n"
 	}
 	if len(event.Messages) > 0 {
 		message := ""
 		for _, m := range event.Messages {
-			message += fmt.Sprintf("%s\\", m)
+			message += fmt.Sprintf("%s\n", m)
 		}
-		text += "Message: " + message + "\\"
+		text += "Message: " + message + "\n"
 	}
 	if event.Action != "" {
-		text += "Action: " + event.Action + "\\"
+		text += "Action: " + event.Action + "\n"
 	}
 	if len(event.Recommendations) > 0 {
 		rec := ""
 		for _, r := range event.Recommendations {
-			rec += fmt.Sprintf("%s\\", r)
+			rec += fmt.Sprintf("%s\n", r)
 		}
-		text += "Recommendations: " + rec + "\\"
+		text += "Recommendations: " + rec + "\n"
 	}
 	if len(event.Warnings) > 0 {
 		warn := ""
 		for _, w := range event.Warnings {
-			warn += fmt.Sprintf("%s\\", w)
+			warn += fmt.Sprintf("%s\n", w)
 		}
-		text += "Warnings: " + warn + "\\"
+		text += "Warnings: " + warn + "\n"
 	}
-	text += "EOL"
 	return text
 }
 
 func telegramShortNotification(event events.Event) string {
-	text := fmt.Sprintf("*%s*", event.Title) + "\\"
-	text += "Description: " + FormatShortMessage(event) + "\\"
-	text += "EOL"
+	text := fmt.Sprintf("*%s*", event.Title) + "\n"
+	text += "Description: " + FormatShortMessage(event) + "\n"
 	return text
 }

@@ -216,7 +216,6 @@ type Webhook struct {
 type Telegram struct {
 	Enabled 		bool
 	Token			string
-	BotID			string
 	Channel 		string
 	NotifType NotifType `yaml:",omitempty"`
 }
