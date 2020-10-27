@@ -218,7 +218,6 @@ type Telegram struct {
 	Token			string
 	BotID			string
 	Channel 		string
-	DisableNotify 	bool
 	NotifType NotifType `yaml:",omitempty"`
 }
 

@@ -33,7 +33,6 @@ type Telegram struct {
 	Token     		string
 	BotID			string
 	ChatID 			string
-	DisableNotify	bool
 	NotifType 		config.NotifType
 }
 
@@ -43,7 +42,6 @@ func NewTelegram(c config.Telegram) Notifier {
 		Token: c.Token
 		BotID: c.BotID,
 		ChatID: c.ChatID,
-		DisableNotify: c.DisableNotify,
 		NotifType: c.NotifType,
 	}
 }
@@ -59,6 +57,7 @@ func (t *Telegram) SendEvent(event events.Event) (err error) {
 
 	msg := tgbotapi.NewMessage(t.ChatID, text)
 	msg.ParseMode = "markdown"
+	msg.
 	if _, err := bot.Send(msg); err != nil {
 		log.Errorf("Error in sending message: %+v", err)
 		return err
