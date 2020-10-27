@@ -68,6 +68,8 @@ const (
 	TeamsBot BotPlatform = "teams"
 	// DiscordBot bot Platform
 	DiscordBot BotPlatform = "discord"
+	// Telegram bot Platform
+	TelegramBot BotPlatform = "telegram"
 )
 
 // EventType to watch
@@ -138,6 +140,7 @@ type CommunicationsConfig struct {
 	Webhook       Webhook
 	Teams         Teams
 	ElasticSearch ElasticSearch
+	Telegram	  Telegram
 }
 
 // Slack configuration to authentication and send notifications
@@ -207,6 +210,16 @@ type Discord struct {
 type Webhook struct {
 	Enabled bool
 	URL     string
+}
+
+// Telegram configuration for authentication and send notifications
+type Telegram struct {
+	Enabled 		bool
+	Token			string
+	BotID			string
+	Channel 		string
+	DisableNotify 	bool
+	NotifType NotifType `yaml:",omitempty"`
 }
 
 // Kubectl configuration for executing commands inside cluster
