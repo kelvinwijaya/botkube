@@ -21,6 +21,7 @@ package notify
 
 import (
 	"fmt"
+	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/infracloudio/botkube/pkg/config"
@@ -39,30 +40,52 @@ type Telegram struct {
 // NewTelegram returns new Telegram object
 func NewTelegram(c config.Telegram) Notifier {
 	return &Telegram{
-		Token: c.Token
+		Token: c.Token,
 		BotID: c.BotID,
-		ChatID: c.ChatID,
+		ChatID: c.Channel,
 		NotifType: c.NotifType,
 	}
 }
 
+// SendMessage sends message to Telegram Channel
+func (t *Telegram) SendMessage(msg string) error {
+	log.Debug(fmt.Sprintf(">> Sending to Telegram: %+v", msg))
+
+	bot, err := tgbotapi.NewBotAPI(t.Token)
+	if err != nil {
+		log.Error("error creating Telegram session,", err)
+	}
+
+	i, _ := strconv.ParseInt(t.ChatID, 10, 64)
+	postMsg := tgbotapi.NewMessage(i, msg)
+	postMsg.ParseMode = "markdown"
+	if _, err := bot.Send(postMsg); err != nil {
+		log.Errorf("Error in sending message: %+v", err)
+		return err
+	}
+	log.Debugf("Message successfully sent to channel %v", t.ChatID)
+	return nil
+}
+
 // SendEvent sends event notification to Telegram Channel
 func (t *Telegram) SendEvent(event events.Event) (err error) {
+	log.Debug(fmt.Sprintf(">> Sending to Telegram: %+v", event))
+
 	bot, err := tgbotapi.NewBotAPI(t.Token)
 	if err != nil {
 		log.Error("error creating Telegram session,", err)
 	}
 
 	text := formatTelegramMessage(event, t.NotifType)
+	i, _ := strconv.ParseInt(t.ChatID, 10, 64)
+	postMsg := tgbotapi.NewMessage(i, text)
+	postMsg.ParseMode = "markdown"
 
-	msg := tgbotapi.NewMessage(t.ChatID, text)
-	msg.ParseMode = "markdown"
-	msg.
-	if _, err := bot.Send(msg); err != nil {
+	if _, err := bot.Send(postMsg); err != nil {
 		log.Errorf("Error in sending message: %+v", err)
 		return err
 	}
-	log.Debugf("Event successfully sent to channel %s", t.ChannelID)
+	log.Debugf("Event successfully sent to channel %v", t.ChatID)
 	return nil
 }
 
@@ -128,7 +151,7 @@ func telegramLongNotification(event events.Event) string {
 
 func telegramShortNotification(event events.Event) string {
 	text := fmt.Sprintf("*%s*", event.Title) + "\\"
-	text := "Description: " + FormatShortMessage(event) + "\\"
+	text += "Description: " + FormatShortMessage(event) + "\\"
 	text += "EOL"
 	return text
 }

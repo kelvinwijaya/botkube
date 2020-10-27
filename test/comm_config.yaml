@@ -55,8 +55,8 @@ communications:
 
   # Settings for Telegram
   telegram:
-    enabled: true
+    enabled: false
     token: 'TELEGRAM_API_TOKEN'
     botid: 'TELEGRAM_BOT_ID'
     channel: 'TELEGRAM_CHAT_ID'
-    notifytype: short
+    notifytype: long

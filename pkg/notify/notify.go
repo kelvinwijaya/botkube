@@ -59,5 +59,10 @@ func ListNotifiers(conf config.CommunicationsConfig) []Notifier {
 	if conf.Webhook.Enabled {
 		notifiers = append(notifiers, NewWebhook(conf))
 	}
+
+	if conf.Telegram.Enabled {
+		notifiers = append(notifiers, NewTelegram(conf.Telegram))
+	}
+
 	return notifiers
 }
